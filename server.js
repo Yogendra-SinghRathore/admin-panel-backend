@@ -1,13 +1,30 @@
-const jsonServer = require("json-server");
-const server = jsonServer.create();
-const router = jsonServer.router("db.json");
-const middlewares = jsonServer.defaults();
+const express = require("express");
+const cors = require("cors");
+const fs = require("fs");
 
+const app = express();
 const PORT = process.env.PORT || 10000;
 
-server.use(middlewares);
-server.use(router);
+app.use(cors());
+app.use(express.json());
 
-server.listen(PORT, () => {
-  console.log(`JSON Server is running on port ${PORT}`);
+// Read db.json
+const getData = () => {
+  const data = fs.readFileSync("db.json");
+  return JSON.parse(data);
+};
+
+// GET all users
+app.get("/users", (req, res) => {
+  const data = getData();
+  res.json(data.users);
+});
+
+// Root route
+app.get("/", (req, res) => {
+  res.send("Admin Backend API is running 🚀");
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
